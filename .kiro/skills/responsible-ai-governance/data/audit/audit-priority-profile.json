@@ -1,0 +1,29 @@
+{
+  "_comment": "Audit-mode rule priorities. Extracted from rules.json audit_guidance.priority. Drives the scoring weight per rule when score.py runs in audit mode.",
+  "priorities": {
+    "RAIUC-01": "medium",
+    "RAIUC-02": "medium",
+    "RAIUC-03": "medium",
+    "RAIUC-04": "medium",
+    "RAIUC-05": "high",
+    "RAIUC-06": "medium",
+    "RAIDD-01": "high",
+    "RAIDD-02": "high",
+    "RAIDD-03": "high",
+    "RAIDD-04": "high",
+    "RAIDD-05": "high",
+    "RAIDD-06": "medium",
+    "RAIDD-07": "high",
+    "RAIER-01": "high",
+    "RAIER-02": "high",
+    "RAIER-03": "high",
+    "RAIER-04": "medium",
+    "RAIER-05": "high",
+    "RAIOP-01": "high",
+    "RAIOP-02": "medium",
+    "RAIOP-03": "low",
+    "RAIOP-04": "medium",
+    "RAIOP-05": "medium",
+    "RAIOP-06": "medium"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "_comment": "Maps the 8 AWS Well-Architected RAI Lens focus areas to the 4 reporting pillars used by the skill. Source of truth for questionnaire scoring rollup. Pillars are a display rollup; focus areas are the canonical Lens taxonomy.",
+  "Use Case":            "RAIUC",
+  "Benefits and Risks":  "RAIDD",
+  "System Planning":     "RAIDD",
+  "Dataset Planning":    "RAIDD",
+  "Release Criteria":    "RAIER",
+  "Evaluate and Release":"RAIER",
+  "Monitoring":          "RAIOP",
+  "User Guidance":       "RAIOP"
+}

@@ -1,0 +1,47 @@
+{
+  "_comment": "Reference stage definitions. The skill itself does NOT consume this file directly. The gate-map templates in templates/design/ derive their default stage names from this catalog. Orchestrators can override stage names entirely in their project's gate-map.json.",
+  "stages": [
+    {
+      "name": "requirements_analysis",
+      "description": "Define the problem, justify AI, identify stakeholders, secure approval",
+      "pillars": ["RAIUC"],
+      "default_policy": "blocking"
+    },
+    {
+      "name": "application_design",
+      "description": "Map user journey, decide on human oversight model, identify upstream/contributing stakeholders",
+      "pillars": ["RAIUC", "RAIDD"],
+      "default_policy": "blocking"
+    },
+    {
+      "name": "functional_design",
+      "description": "Fairness assessment, explainability, privacy, safety, veracity/robustness design",
+      "pillars": ["RAIDD"],
+      "default_policy": "advisory"
+    },
+    {
+      "name": "nfr_requirements",
+      "description": "Data governance, evaluation criteria, release planning",
+      "pillars": ["RAIDD", "RAIER"],
+      "default_policy": "blocking"
+    },
+    {
+      "name": "infrastructure_design",
+      "description": "Operations, monitoring, incident response, decommissioning plan",
+      "pillars": ["RAIOP"],
+      "default_policy": "advisory"
+    },
+    {
+      "name": "code_generation",
+      "description": "Enforcement of design decisions in code; user feedback affordance; transparency",
+      "pillars": ["RAIDD", "RAIOP"],
+      "default_policy": "advisory"
+    },
+    {
+      "name": "build_and_test",
+      "description": "Test coverage, traceability, go/no-go review, system card, monitoring wiring",
+      "pillars": ["RAIER", "RAIOP"],
+      "default_policy": "blocking"
+    }
+  ]
+}

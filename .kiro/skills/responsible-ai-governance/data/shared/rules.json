@@ -1,0 +1,1076 @@
+{
+  "RAIUC-01": {
+    "id": "RAIUC-01",
+    "name": "Verify AI Is Necessary",
+    "pillar": "RAIUC",
+    "lens_bps": [
+      "RAIUC01-BP02"
+    ],
+    "tier_1": "enforced",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "Before committing to an AI/ML approach, verify that AI is required. Traditional software approaches or manual processes must be evaluated as alternatives.",
+    "verification_criteria": [
+      "Requirements document includes a statement confirming why AI/ML is necessary",
+      "At least one non-AI alternative was considered and documented with rationale for rejection",
+      "If a feature can be solved with deterministic rules, AI must not be used without documented justification"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search for any design documents, ADRs, or README sections discussing why AI/ML was chosen",
+        "Look for comments in code explaining the rationale for using a model vs. deterministic logic",
+        "Check if non-AI alternatives were documented anywhere"
+      ],
+      "compliant_if": "Documentation exists showing AI was chosen deliberately with alternatives considered",
+      "partial_if": null,
+      "non_compliant_if": "No documentation found \u2014 AI appears to have been adopted without justification",
+      "unknown_if": null,
+      "remediation": "Write a brief AI use case justification document",
+      "priority": "medium",
+      "suggested_keywords": [
+        "AI",
+        "machine learning",
+        "alternative",
+        "justification",
+        "why AI",
+        "ADR"
+      ]
+    },
+    "evidence_source": "documentation"
+  },
+  "RAIUC-02": {
+    "id": "RAIUC-02",
+    "name": "Identify All Stakeholders Including Affected Groups",
+    "pillar": "RAIUC",
+    "lens_bps": [
+      "RAIUC02-BP01",
+      "RAIUC02-BP02"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "Identify not only direct users but also groups who are indirectly affected by AI decisions, including demographic groups who may experience differential outcomes.",
+    "verification_criteria": [
+      "Requirements document identifies all stakeholder categories: direct users, contributing stakeholders, and affected groups",
+      "For any AI-driven recommendation or ranking feature, requirements explicitly name which demographic or user groups could be differentially affected",
+      "Stakeholder list is referenced in user stories and design artifacts"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search requirements docs, user stories, or product specs for stakeholder lists",
+        "Look for any mention of demographic groups, affected populations, or indirect users",
+        "Check if the system impact on different user groups was ever analyzed"
+      ],
+      "compliant_if": "Stakeholder analysis exists including groups who may be indirectly affected",
+      "partial_if": null,
+      "non_compliant_if": "Only direct users mentioned with no analysis of differential impact",
+      "unknown_if": null,
+      "remediation": "Add stakeholder analysis to requirements documentation",
+      "priority": "medium",
+      "suggested_keywords": [
+        "stakeholder",
+        "demographic",
+        "affected",
+        "population",
+        "user group",
+        "indirect"
+      ]
+    },
+    "evidence_source": "documentation"
+  },
+  "RAIUC-03": {
+    "id": "RAIUC-03",
+    "name": "Identify the Type of AI Required",
+    "pillar": "RAIUC",
+    "lens_bps": [
+      "RAIUC03-BP03"
+    ],
+    "tier_1": "enforced",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "For each AI-powered feature, explicitly identify and justify the type of AI being used: traditional ML, generative AI, or agentic AI.",
+    "verification_criteria": [
+      "Each AI feature is classified as traditional ML, generative AI, or agentic AI",
+      "The classification is justified with reference to use case requirements",
+      "Higher-risk AI types require proportionally more rigorous design and evaluation documentation",
+      "Misaligned choices are flagged as a finding"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search for model type declarations, imports, or SDK usage (e.g., bedrock, openai, sklearn, transformers)",
+        "Identify whether the system uses: traditional ML, generative AI (LLM), or agentic AI (tool use, multi-step)",
+        "Check if the AI type choice is documented and justified"
+      ],
+      "compliant_if": "AI type is clearly identifiable from code AND documented with justification",
+      "partial_if": "AI type is identifiable from code but not documented",
+      "non_compliant_if": "AI type is unclear or misclassified",
+      "unknown_if": null,
+      "remediation": "Document AI type and justification in architecture docs",
+      "priority": "medium",
+      "suggested_keywords": [
+        "bedrock",
+        "openai",
+        "sklearn",
+        "transformers",
+        "LLM",
+        "agent",
+        "model",
+        "generative",
+        "agentic"
+      ]
+    },
+    "evidence_source": "both"
+  },
+  "RAIUC-04": {
+    "id": "RAIUC-04",
+    "name": "Map User Journey for AI Interaction Requirements",
+    "pillar": "RAIUC",
+    "lens_bps": [
+      "RAIUC04-BP01",
+      "RAIUC04-BP02",
+      "RAIUC04-BP03"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "Map the full user journey across pre-interaction, interaction, and post-interaction phases. Transparency and human oversight requirements must be identified at each phase.",
+    "verification_criteria": [
+      "Application design includes a user journey map for each AI-powered feature covering all three phases",
+      "Transparency requirements are documented",
+      "Human override capability is designed into every AI-driven decision flow",
+      "Accessibility considerations are documented for AI interaction points"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search UI code for AI disclosure messages, loading indicators, or powered by AI labels",
+        "Look for pre-interaction onboarding or capability disclosure",
+        "Check if users can provide feedback or override AI outputs",
+        "Search for post-interaction explanation or reasoning display"
+      ],
+      "compliant_if": "All three phases (pre/during/post) have documented AI interaction requirements",
+      "partial_if": "Some phases addressed but not all",
+      "non_compliant_if": "No AI-specific user journey considerations found",
+      "unknown_if": null,
+      "remediation": "Map AI interaction requirements and implement missing phases",
+      "priority": "medium",
+      "suggested_keywords": [
+        "disclosure",
+        "AI assistant",
+        "powered by",
+        "override",
+        "feedback",
+        "explanation",
+        "transparency"
+      ]
+    },
+    "evidence_source": "both"
+  },
+  "RAIUC-05": {
+    "id": "RAIUC-05",
+    "name": "Obtain Organizational Approval for AI Use Case",
+    "pillar": "RAIUC",
+    "lens_bps": [
+      "RAIUC05-BP01"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "Identify the regulatory and organizational approval requirements for the AI use case, including applicable regulations and the approval pathway.",
+    "verification_criteria": [
+      "Requirements document identifies the geographic scope and applicable regulatory requirements",
+      "Organizational approval process is identified",
+      "If regulatory classification is unclear, this is flagged as a risk"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search for compliance documentation, legal review records, or approval emails referenced in code comments",
+        "Look for regulatory classification (HIPAA, GDPR, FDA, etc.) in any documentation",
+        "Check if the AI feature went through any formal review process"
+      ],
+      "compliant_if": "Evidence of regulatory scope identification and approval pathway",
+      "partial_if": null,
+      "non_compliant_if": null,
+      "unknown_if": "No documentation found \u2014 requires human confirmation",
+      "remediation": "Document regulatory requirements and approval pathway",
+      "priority": "high",
+      "suggested_keywords": [
+        "HIPAA",
+        "GDPR",
+        "compliance",
+        "regulatory",
+        "approval",
+        "legal",
+        "FDA",
+        "regulation"
+      ]
+    },
+    "evidence_source": "documentation"
+  },
+  "RAIUC-06": {
+    "id": "RAIUC-06",
+    "name": "Define AI Inputs, Outputs, and Input Variation",
+    "pillar": "RAIUC",
+    "lens_bps": [
+      "RAIUC03-BP01",
+      "RAIUC03-BP02"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "Document what goes into the AI system, what comes out, and how inputs could systematically vary. Distinguish intrinsic variations (system should attend to) from confounding variations (system should ignore). This drives robustness design decisions.",
+    "verification_criteria": [
+      "Requirements or design document specifies AI system inputs at a high level",
+      "Expected outputs are described including type and format",
+      "Intrinsic input variations are identified (differences the system must handle)",
+      "Confounding input variations are identified (differences the system should ignore)",
+      "Edge cases and out-of-distribution scenarios are documented"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search for input validation schemas, request models, or API contracts defining what the AI accepts",
+        "Look for output schemas or response models defining what the AI returns",
+        "Search for robustness tests or edge case tests covering input variation",
+        "Check if documentation describes what types of inputs the system handles vs. rejects",
+        "Look for input sanitization or normalization logic that handles variation"
+      ],
+      "compliant_if": "Input/output types documented AND input variation scenarios identified with handling strategy",
+      "partial_if": "Input/output types documented but no variation analysis",
+      "non_compliant_if": "No documentation of what the AI system accepts or produces",
+      "unknown_if": null,
+      "remediation": "Document AI input/output specification and identify intrinsic vs confounding input variations",
+      "priority": "medium",
+      "suggested_keywords": [
+        "input",
+        "output",
+        "schema",
+        "validation",
+        "variation",
+        "edge case",
+        "robustness",
+        "request model"
+      ]
+    },
+    "evidence_source": "both"
+  },
+  "RAIDD-01": {
+    "id": "RAIDD-01",
+    "name": "Fairness Assessment in Design",
+    "pillar": "RAIDD",
+    "lens_bps": [
+      "RAIBR02-BP01",
+      "RAISP02-BP03"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "Every AI feature that produces recommendations, rankings, or decisions affecting users must include a fairness assessment. The assessment must identify potential sources of bias and define fairness metrics.",
+    "verification_criteria": [
+      "Functional design includes a Fairness Assessment section for each AI-powered component",
+      "Potential bias sources are identified: training data bias, feature selection bias, feedback loop bias, proxy discrimination",
+      "Fairness metrics are defined appropriate to the use case",
+      "Mitigation strategies for identified bias sources are documented"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search for diversity injection, result shuffling, or demographic balancing in recommendation/ranking code",
+        "Look for fairness metrics, bias tests, or demographic parity checks in test files",
+        "Search for any bias mitigation patterns (e.g., re-ranking, minimum diversity requirements)",
+        "Check if training data documentation mentions demographic representation"
+      ],
+      "compliant_if": "Fairness assessment documented AND at least one mitigation strategy implemented",
+      "partial_if": "Fairness mentioned in docs but no implementation evidence, OR implementation exists but undocumented",
+      "non_compliant_if": "No fairness consideration found in code or documentation",
+      "unknown_if": null,
+      "remediation": "Conduct fairness assessment and implement diversity injection",
+      "priority": "high",
+      "suggested_keywords": [
+        "diversity",
+        "fairness",
+        "bias",
+        "demographic",
+        "parity",
+        "diversity_injection",
+        "apply_diversity"
+      ]
+    },
+    "evidence_source": "both"
+  },
+  "RAIDD-02": {
+    "id": "RAIDD-02",
+    "name": "Explainability by Design",
+    "pillar": "RAIDD",
+    "lens_bps": [
+      "RAIBR02-BP07",
+      "RAISP02-BP07"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "Every AI feature that produces a recommendation or decision visible to a user must be designed with explainability as a first-class requirement. The level of explainability must be proportional to the impact of the decision.",
+    "verification_criteria": [
+      "Functional design specifies what explanation will be shown to the user for each AI output",
+      "The explanation mechanism is designed into the data model and API \u2014 not added as a post-hoc label",
+      "For high-impact decisions, the explanation must reference the actual factors used",
+      "Explainability requirements are included in the API design and UI specifications"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search API response schemas for explanation fields, reason codes, or factor arrays",
+        "Look for UI components that display why information alongside AI outputs",
+        "Search for explanation, reason, factors, match_factors, confidence fields in response objects",
+        "Check if explanations reference actual model inputs vs. generic messages"
+      ],
+      "compliant_if": "Structured explanation data returned with every AI output AND displayed to users",
+      "partial_if": "Some explanation exists but it is generic rather than factor-based",
+      "non_compliant_if": "No explanation mechanism found \u2014 AI outputs are opaque to users",
+      "unknown_if": null,
+      "remediation": "Add explanation fields to AI response API and surface them in UI",
+      "priority": "high",
+      "suggested_keywords": [
+        "explanation",
+        "explain",
+        "reason",
+        "factors",
+        "match_factors",
+        "confidence",
+        "why",
+        "because"
+      ]
+    },
+    "evidence_source": "code"
+  },
+  "RAIDD-03": {
+    "id": "RAIDD-03",
+    "name": "Privacy by Design for AI Features",
+    "pillar": "RAIDD",
+    "lens_bps": [
+      "RAIBR02-BP04",
+      "RAISP02-BP02",
+      "RAISP03-BP01"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "AI features that use personal or sensitive data as input signals must apply privacy-by-design principles. Data minimization, purpose limitation, and consent must be addressed in the design.",
+    "verification_criteria": [
+      "Functional design identifies exactly which personal or sensitive data fields are used as inputs to AI features",
+      "Data minimization is applied: only the minimum data necessary for the AI feature is used",
+      "Purpose limitation is documented",
+      "The design specifies whether personal data is used for model training and what consent mechanism applies",
+      "Differential privacy or anonymization techniques are evaluated and documented"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search for conversation/session storage \u2014 are user inputs persisted beyond the session?",
+        "Look for personal or sensitive data fields being passed to AI models (names, health data, financial data, demographics)",
+        "Check logging configuration \u2014 are user inputs or model prompts logged in plain text?",
+        "Search for data minimization patterns (only necessary fields sent to model)"
+      ],
+      "compliant_if": "User inputs not persisted beyond session, personal data minimized, logs redacted",
+      "partial_if": "Some privacy controls exist but gaps remain (e.g., inputs logged in plain text)",
+      "non_compliant_if": "User inputs persisted without consent, personal data sent to model unnecessarily, or inputs logged",
+      "unknown_if": null,
+      "remediation": "Implement session-only storage, PII/sensitive data redaction in logs, data minimization",
+      "priority": "high",
+      "suggested_keywords": [
+        "session",
+        "persist",
+        "log",
+        "PII",
+        "personal",
+        "privacy",
+        "redact",
+        "conversation_history",
+        "store"
+      ]
+    },
+    "evidence_source": "code"
+  },
+  "RAIDD-04": {
+    "id": "RAIDD-04",
+    "name": "Safety and Harm Prevention Design",
+    "pillar": "RAIDD",
+    "lens_bps": [
+      "RAIBR02-BP05",
+      "RAISP02-BP10",
+      "RAISP03-BP03"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "The design must explicitly identify potential harms from AI outputs and include safeguards to prevent or mitigate them. This includes both direct harms and indirect harms.",
+    "verification_criteria": [
+      "Functional design includes a Potential Harms section for each AI feature",
+      "Both direct and indirect harm scenarios are documented",
+      "Safeguards are designed for each identified harm",
+      "The design specifies what happens when the AI cannot produce a confident output (graceful degradation)",
+      "The design must not allow the AI to operate outside its documented scope"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search for content filtering, input validation, or safety checks BEFORE the AI model is called",
+        "Look for denied topics, blocked patterns, or safety classifiers",
+        "Search for graceful degradation \u2014 what happens when the AI cannot produce a safe output?",
+        "For high-risk domains (healthcare, finance, legal): search for domain-specific safety guardrails"
+      ],
+      "compliant_if": "Pre-model safety gate exists AND graceful degradation is implemented",
+      "partial_if": "Post-model filtering exists but no pre-model gate, OR safety exists but no graceful degradation",
+      "non_compliant_if": "No safety filtering found \u2014 all user input reaches the model unfiltered",
+      "unknown_if": null,
+      "remediation": "Add pre-model content gate and graceful degradation fallback",
+      "priority": "high",
+      "suggested_keywords": [
+        "safety",
+        "filter",
+        "guard",
+        "block",
+        "clinical",
+        "harm",
+        "content_filter",
+        "check_clinical",
+        "pre_model",
+        "guardrail"
+      ]
+    },
+    "evidence_source": "code"
+  },
+  "RAIDD-05": {
+    "id": "RAIDD-05",
+    "name": "Human Oversight and Controllability",
+    "pillar": "RAIDD",
+    "lens_bps": [
+      "RAIUC04-BP02",
+      "RAISP02-BP06"
+    ],
+    "tier_1": "enforced",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "Every AI feature must be designed with explicit human oversight mechanisms. Humans must be able to monitor, adjust, override, and if necessary shut down AI features without requiring code changes.",
+    "verification_criteria": [
+      "Application design includes an admin/ops capability to monitor AI output quality metrics",
+      "Override mechanisms exist at multiple levels: end user, admin, engineering",
+      "Feature flags or kill switches for AI features are included in the infrastructure design",
+      "Audit logging captures AI inputs, outputs, and any human overrides",
+      "The design specifies who has authority to override AI decisions and under what circumstances"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search for feature flags, environment variables, or config settings that disable AI features",
+        "Look for escalation paths \u2014 can users request human assistance?",
+        "Search for admin monitoring dashboards or quality metric tracking",
+        "Check if AI can be disabled without a code deployment (kill switch pattern)"
+      ],
+      "compliant_if": "Kill switch exists + user escalation path + admin monitoring capability",
+      "partial_if": "Some oversight mechanisms exist but not all three",
+      "non_compliant_if": "No way to disable AI without code change, no escalation path, no monitoring",
+      "unknown_if": null,
+      "remediation": "Add kill switch env var, escalation UI, and monitoring metrics",
+      "priority": "high",
+      "suggested_keywords": [
+        "AGENT_ENABLED",
+        "AI_ENABLED",
+        "kill_switch",
+        "escalat",
+        "human",
+        "override",
+        "disable",
+        "feature_flag",
+        "os.environ"
+      ]
+    },
+    "evidence_source": "code"
+  },
+  "RAIDD-06": {
+    "id": "RAIDD-06",
+    "name": "Data Governance for AI Training and Inference",
+    "pillar": "RAIDD",
+    "lens_bps": [
+      "RAISP01-BP01"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "The design must document the data governance model for all data used in AI features \u2014 both at inference time and if applicable at training time.",
+    "verification_criteria": [
+      "NFR requirements include data lineage documentation for AI input data",
+      "The source, quality, and known limitations of data used for AI features are documented",
+      "Data retention policies for AI inference logs are defined",
+      "The design specifies how data quality issues are handled at inference time"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search for model version pinning (hardcoded model IDs vs. latest)",
+        "Look for data lineage documentation \u2014 what data feeds the AI?",
+        "Check if inference input/output is logged with appropriate retention policies",
+        "Search for model registry or versioning artifacts"
+      ],
+      "compliant_if": "Model version pinned, data lineage documented, inference logging configured",
+      "partial_if": "Model version pinned but no data lineage, OR logging exists but no retention policy",
+      "non_compliant_if": "Model version unpinned (latest), no data lineage, no inference logging",
+      "unknown_if": null,
+      "remediation": "Pin model version, document data lineage, configure inference logging",
+      "priority": "medium",
+      "suggested_keywords": [
+        "model_id",
+        "BEDROCK_MODEL_ID",
+        "model version",
+        "latest",
+        "data lineage",
+        "inference log",
+        "retention"
+      ]
+    },
+    "evidence_source": "both"
+  },
+  "RAIDD-07": {
+    "id": "RAIDD-07",
+    "name": "Identify Veracity, Robustness, and Security Harms",
+    "pillar": "RAIDD",
+    "lens_bps": [
+      "RAIBR02-BP02",
+      "RAIBR02-BP03",
+      "RAIBR02-BP06",
+      "RAISP01-BP03",
+      "RAISP02-BP04",
+      "RAISP02-BP08",
+      "RAISP03-BP02",
+      "RAISP03-BP04"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "Explicitly identify hallucination risks, robustness failure modes (input variation causing wrong outputs), and adversarial/security risks (prompt injection, jailbreaking). Each must have a documented mitigation strategy.",
+    "verification_criteria": [
+      "Functional design identifies hallucination and veracity risks with mitigations",
+      "Robustness failure modes from input variation are documented",
+      "Adversarial input risks (prompt injection, jailbreaking) are identified",
+      "Security protections are designed into the core AI system",
+      "Output filtering for hallucinations is specified",
+      "Design choices that introduced new risks are documented"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search for hallucination detection, grounding checks, or factual accuracy validation",
+        "Look for prompt injection detection or jailbreak prevention patterns",
+        "Search for input sanitization that handles adversarial inputs",
+        "Check for robustness tests covering unexpected or malformed inputs",
+        "Look for output validation that checks factual consistency",
+        "Search for security-specific guardrails or content filters"
+      ],
+      "compliant_if": "Hallucination mitigation documented AND adversarial input protection implemented AND robustness tests exist",
+      "partial_if": "Some protections exist but not all three categories addressed",
+      "non_compliant_if": "No hallucination mitigation, no adversarial protection, and no robustness testing",
+      "unknown_if": null,
+      "remediation": "Add hallucination detection, prompt injection protection, and robustness test cases",
+      "priority": "high",
+      "suggested_keywords": [
+        "hallucination",
+        "grounding",
+        "prompt injection",
+        "jailbreak",
+        "adversarial",
+        "sanitize",
+        "robustness",
+        "factual",
+        "security"
+      ]
+    },
+    "evidence_source": "code"
+  },
+  "RAIER-01": {
+    "id": "RAIER-01",
+    "name": "Pre-Release RAI Review Planning",
+    "pillar": "RAIER",
+    "lens_bps": [
+      "RAIRC01-BP01",
+      "RAISP02-BP01",
+      "RAIER01-BP01"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "The code generation plan for any unit containing AI/ML features must include explicit test steps for the pre-release RAI review. RAI evaluation must be a named, checkboxed step in the generation plan.",
+    "verification_criteria": [
+      "Code generation plan includes all applicable RAI review test steps as named checkboxes",
+      "RAI test steps are not grouped under a generic testing step \u2014 they are explicitly named",
+      "Each RAI test step references the corresponding RAIDD design rule it validates"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search CI/CD pipeline configs for RAI-specific test steps",
+        "Look for test files with fairness, bias, or safety test cases",
+        "Check if code generation or release checklists include RAI review items"
+      ],
+      "compliant_if": "RAI test steps exist in CI/CD AND test files cover fairness/safety/explainability",
+      "partial_if": "Some RAI tests exist but not systematically included in release process",
+      "non_compliant_if": "No RAI-specific tests found in test suite or CI/CD pipeline",
+      "unknown_if": null,
+      "remediation": "Add RAI test steps to CI/CD and create RAI test file",
+      "priority": "high",
+      "suggested_keywords": [
+        "test_rai",
+        "rai_test",
+        "fairness test",
+        "bias test",
+        "safety test",
+        "RAI",
+        "responsible AI"
+      ]
+    },
+    "evidence_source": "both"
+  },
+  "RAIER-02": {
+    "id": "RAIER-02",
+    "name": "Pre-Release Stakeholder Review and Go/No-Go Decision",
+    "pillar": "RAIER",
+    "lens_bps": [
+      "RAIER02-BP02",
+      "RAIER01-BP02"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "Before any AI feature is considered ready for deployment, the build and test instructions must include a structured stakeholder review step with a documented go/no-go decision.",
+    "verification_criteria": [
+      "Build and test instructions include a RAI Pre-Release Review section",
+      "The review checklist covers: fairness, bias, privacy, safety, explainability test results",
+      "Stakeholder roles for the review are identified",
+      "A rai-release-review.md artifact is included in the build and test output files",
+      "No-go criteria are explicitly stated"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search for release checklists, deployment runbooks, or approval workflows",
+        "Look for any documented go/no-go criteria for AI features",
+        "Check if responsible AI review is part of the release process"
+      ],
+      "compliant_if": "Formal RAI review process with named approvers documented",
+      "partial_if": null,
+      "non_compliant_if": "No release review process found, or AI features deploy without any RAI gate",
+      "unknown_if": "Release process exists but RAI review not explicitly included",
+      "remediation": "Create RAI pre-release review checklist and integrate into release process",
+      "priority": "high",
+      "suggested_keywords": [
+        "release review",
+        "go/no-go",
+        "approval",
+        "sign-off",
+        "rai-release-review",
+        "checklist",
+        "deploy"
+      ]
+    },
+    "evidence_source": "documentation"
+  },
+  "RAIER-03": {
+    "id": "RAIER-03",
+    "name": "Fairness and Bias Test Coverage",
+    "pillar": "RAIER",
+    "lens_bps": [
+      "RAIRC03-BP01",
+      "RAIRC03-BP02",
+      "RAIRC03-BP03",
+      "RAIRC03-BP04",
+      "RAIRC03-BP05",
+      "RAIRC03-BP07",
+      "RAIRC03-BP08",
+      "RAIRC03-BP09"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "The test suite for any AI unit must include tests that specifically evaluate fairness and bias using representative test data that covers the demographic and contextual diversity of the expected user population.",
+    "verification_criteria": [
+      "Unit test instructions include fairness test cases with representative test data",
+      "Test data covers diverse user profiles",
+      "Tests verify that AI output quality does not systematically differ across user demographic groups",
+      "Bias test results are documented with quantitative metrics where applicable"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search test files for demographic diversity in test data",
+        "Look for tests that verify AI output quality across different user groups",
+        "Check if bias amplification is tested"
+      ],
+      "compliant_if": "Test suite includes diverse test data AND tests verify parity across groups",
+      "partial_if": "Some diversity in test data but no explicit parity verification",
+      "non_compliant_if": "Test data is homogeneous or no fairness-specific tests exist",
+      "unknown_if": null,
+      "remediation": "Add diverse test data and fairness parity test cases",
+      "priority": "high",
+      "suggested_keywords": [
+        "diverse",
+        "demographic",
+        "parity",
+        "fairness",
+        "bias",
+        "test_fairness",
+        "test_bias",
+        "group"
+      ]
+    },
+    "evidence_source": "code"
+  },
+  "RAIER-04": {
+    "id": "RAIER-04",
+    "name": "Model and System Traceability",
+    "pillar": "RAIER",
+    "lens_bps": [
+      "RAIER01-BP03"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "Every AI component must have documented traceability: what data was used, what model or algorithm was applied, what version is deployed, and what evaluation results were recorded.",
+    "verification_criteria": [
+      "Build and test instructions include a step to record AI component metadata",
+      "The rai-release-review.md artifact includes a traceability section",
+      "If a pre-trained model is used, its version is pinned and documented",
+      "Evaluation results are recorded alongside the traceability metadata"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search for model version documentation (README, config files, deployment manifests)",
+        "Look for training data documentation or data cards",
+        "Check if evaluation results are recorded anywhere"
+      ],
+      "compliant_if": "Model version, training data description, and evaluation results all documented",
+      "partial_if": "Model version documented but training data or evaluation results missing",
+      "non_compliant_if": "No model documentation found \u2014 cannot determine what model is running or why",
+      "unknown_if": null,
+      "remediation": "Create model card / system card documenting model, data, and evaluation",
+      "priority": "medium",
+      "suggested_keywords": [
+        "model card",
+        "system card",
+        "model version",
+        "evaluation results",
+        "traceability",
+        "data card",
+        "model_id"
+      ]
+    },
+    "evidence_source": "both"
+  },
+  "RAIER-05": {
+    "id": "RAIER-05",
+    "name": "Graceful Degradation and Fallback Validation",
+    "pillar": "RAIER",
+    "lens_bps": [
+      "RAISP02-BP09"
+    ],
+    "tier_1": "enforced",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "The test suite must include tests that validate graceful degradation behavior \u2014 what happens when the AI cannot produce a confident or safe recommendation. The fallback must be tested explicitly.",
+    "verification_criteria": [
+      "Test cases cover: no matching results found, AI confidence below threshold, AI service unavailable, malformed input data",
+      "Each scenario has a documented expected fallback behavior",
+      "Fallback behavior does not expose AI internals or error details to the user",
+      "Tests verify that fallback paths do not bypass access control or data privacy requirements"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search for try/catch blocks around AI calls with meaningful fallback behavior",
+        "Look for timeout handling, circuit breakers, or fallback responses",
+        "Check if fallback paths are tested"
+      ],
+      "compliant_if": "Graceful degradation implemented AND tested for key failure scenarios",
+      "partial_if": "Some error handling exists but fallback behavior is generic (500 error) or untested",
+      "non_compliant_if": "AI failures propagate as unhandled errors to users",
+      "unknown_if": null,
+      "remediation": "Implement and test graceful degradation for AI service unavailability",
+      "priority": "high",
+      "suggested_keywords": [
+        "try",
+        "except",
+        "catch",
+        "fallback",
+        "timeout",
+        "circuit breaker",
+        "ClientError",
+        "graceful",
+        "degradation"
+      ]
+    },
+    "evidence_source": "code"
+  },
+  "RAIOP-01": {
+    "id": "RAIOP-01",
+    "name": "AI Performance and Fairness Monitoring",
+    "pillar": "RAIOP",
+    "lens_bps": [
+      "RAIMON01-BP02",
+      "RAIMON01-BP04"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "The build and test instructions must include operational readiness steps for monitoring AI feature performance and fairness in production. Monitoring must be designed before deployment.",
+    "verification_criteria": [
+      "Build and test instructions include an Operational Readiness \u2014 AI Monitoring section",
+      "Monitoring requirements are specified for each AI feature: what metrics, what thresholds, what alerting",
+      "Fairness drift monitoring is explicitly included",
+      "Infrastructure design includes the monitoring infrastructure"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search for custom metrics, dashboards, or alerting configs related to AI features",
+        "Look for recommendation quality metrics, override rates, or user satisfaction tracking",
+        "Check if fairness drift monitoring exists (tracking demographic distribution over time)"
+      ],
+      "compliant_if": "AI-specific metrics defined + fairness drift monitoring + alerting configured",
+      "partial_if": "Basic performance metrics exist but no fairness monitoring",
+      "non_compliant_if": "No AI-specific monitoring \u2014 only generic infrastructure metrics",
+      "unknown_if": null,
+      "remediation": "Add AI quality metrics and fairness drift monitoring",
+      "priority": "high",
+      "suggested_keywords": [
+        "metric",
+        "monitor",
+        "dashboard",
+        "alert",
+        "drift",
+        "fairness monitoring",
+        "CloudWatch",
+        "override rate"
+      ]
+    },
+    "evidence_source": "both"
+  },
+  "RAIOP-02": {
+    "id": "RAIOP-02",
+    "name": "AI Incident Response Plan",
+    "pillar": "RAIOP",
+    "lens_bps": [
+      "RAIMON01-BP05"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "The build and test summary must include an AI-specific incident response plan. AI incidents are distinct from standard software incidents \u2014 they may involve subtle, systematic harms.",
+    "verification_criteria": [
+      "Build and test summary includes an AI Incident Response section covering detection, classification, containment, investigation, recovery, communication",
+      "Feature flag / kill switch for AI features is confirmed as implemented",
+      "Escalation path for AI incidents is defined",
+      "Applicable regulatory notification requirements are addressed"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search runbooks, incident response docs, or on-call guides for AI-specific procedures",
+        "Look for severity classification that includes AI-specific incidents (bias, harmful output)",
+        "Check if there is a documented process for disabling AI features in an incident"
+      ],
+      "compliant_if": "AI incident response plan exists with severity levels and kill switch procedure",
+      "partial_if": "Requirements or design documents specify incident response intent (kill switch, monitoring, escalation) but no dedicated runbook or operational artifact exists yet",
+      "non_compliant_if": "No incident response documentation, kill switch, or escalation path found anywhere",
+      "unknown_if": "No documentation provided and no code evidence of any incident handling",
+      "remediation": "Create AI incident response runbook",
+      "priority": "medium",
+      "suggested_keywords": [
+        "incident",
+        "runbook",
+        "on-call",
+        "severity",
+        "response plan",
+        "escalation",
+        "P1",
+        "P2"
+      ]
+    },
+    "evidence_source": "documentation"
+  },
+  "RAIOP-03": {
+    "id": "RAIOP-03",
+    "name": "Ongoing Governance and Review Cadence",
+    "pillar": "RAIOP",
+    "lens_bps": [
+      "RAIMON03-BP01"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "The build and test instructions must specify a governance review cadence for AI features post-deployment. AI systems must not be deployed and forgotten.",
+    "verification_criteria": [
+      "Build and test summary includes a Post-Deployment AI Governance section",
+      "Review cadence is specified with concrete timeframes",
+      "Retirement criteria are documented",
+      "Governance review outputs are linked to the system registry"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search for scheduled reviews, recurring calendar items, or governance documentation",
+        "Look for model refresh schedules or retraining triggers",
+        "Check if there is a documented process for retiring or replacing AI features"
+      ],
+      "compliant_if": "Governance cadence documented with concrete timeframes and retirement criteria",
+      "partial_if": null,
+      "non_compliant_if": "No governance cadence found \u2014 AI features deployed and forgotten",
+      "unknown_if": "Reviews may happen informally but not documented",
+      "remediation": "Document governance review schedule and retirement criteria",
+      "priority": "low",
+      "suggested_keywords": [
+        "governance",
+        "review cadence",
+        "quarterly",
+        "retirement",
+        "model refresh",
+        "scheduled review"
+      ]
+    },
+    "evidence_source": "documentation"
+  },
+  "RAIOP-04": {
+    "id": "RAIOP-04",
+    "name": "User Feedback Loop",
+    "pillar": "RAIOP",
+    "lens_bps": [
+      "RAIMON02-BP01"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "AI features must have a mechanism for users to provide feedback on AI outputs in production. This feedback must be collected, monitored, and acted upon.",
+    "verification_criteria": [
+      "Code generation includes a user feedback mechanism for AI-powered features",
+      "Feedback data is stored and accessible for analysis",
+      "Build and test instructions include a step to verify the feedback collection mechanism works",
+      "Operational readiness section specifies how feedback is reviewed and what threshold triggers investigation"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search UI code for thumbs up/down, rating widgets, or report a problem features on AI outputs",
+        "Look for feedback storage and analysis pipelines",
+        "Check if negative feedback triggers any investigation or alerting"
+      ],
+      "compliant_if": "Feedback mechanism in UI + feedback stored + threshold triggers investigation",
+      "partial_if": "Feedback UI exists but data not analyzed or no threshold alerting",
+      "non_compliant_if": "No user feedback mechanism on AI outputs",
+      "unknown_if": null,
+      "remediation": "Add feedback widget to AI output UI and feedback analysis pipeline",
+      "priority": "medium",
+      "suggested_keywords": [
+        "feedback",
+        "thumbs",
+        "rating",
+        "report",
+        "helpful",
+        "was this helpful",
+        "feedback_loop"
+      ]
+    },
+    "evidence_source": "code"
+  },
+  "RAIOP-05": {
+    "id": "RAIOP-05",
+    "name": "Transparency to Users About AI Use",
+    "pillar": "RAIOP",
+    "lens_bps": [
+      "RAIBR02-BP08",
+      "RAIGT01-BP01",
+      "RAIGT01-BP04",
+      "RAIRC03-BP10"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "enforced",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "Users must be clearly informed that AI is being used to generate recommendations or make decisions that affect them. This transparency must be implemented in the product.",
+    "verification_criteria": [
+      "UI/UX design and code generation include visible disclosure that AI is being used",
+      "The disclosure is present at the point of AI interaction",
+      "Users can access a plain-language explanation of how the AI works and what data it uses",
+      "Build and test instructions include a test case verifying that AI disclosure is present and accurate"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search UI code for AI, powered by, automated, or similar disclosure labels near AI outputs",
+        "Look for privacy policy or terms of service mentioning AI use",
+        "Check if users can access an explanation of how the AI works"
+      ],
+      "compliant_if": "Visible AI disclosure at point of interaction + accessible explanation of AI use",
+      "partial_if": "Disclosure exists in privacy policy/ToS but not at point of interaction",
+      "non_compliant_if": "No disclosure found \u2014 users cannot tell they are interacting with AI",
+      "unknown_if": null,
+      "remediation": "Add AI disclosure label at point of interaction",
+      "priority": "medium",
+      "suggested_keywords": [
+        "AI assistant",
+        "powered by AI",
+        "automated",
+        "disclosure",
+        "IDENTITY",
+        "I am an AI",
+        "system prompt"
+      ]
+    },
+    "evidence_source": "code"
+  },
+  "RAIOP-06": {
+    "id": "RAIOP-06",
+    "name": "System Card and User Guidance Documentation",
+    "pillar": "RAIOP",
+    "lens_bps": [
+      "RAIGT01-BP02",
+      "RAIGT01-BP03",
+      "RAIGT01-BP06"
+    ],
+    "tier_1": "deferred",
+    "tier_2": "deferred",
+    "tier_3": "enforced",
+    "blocking": true,
+    "description": "A system card documenting intended use, limitations, and failure modes must be created. A plan for keeping it current must exist. Guidance for users on how to responsibly adjust system behavior must be provided.",
+    "verification_criteria": [
+      "A system card exists documenting intended use cases and limitations",
+      "Failure modes and their handling are documented in the system card",
+      "A plan for publishing and updating the system card is defined",
+      "User guidance on how to responsibly change system behavior is provided"
+    ],
+    "audit_guidance": {
+      "what_to_look_for": [
+        "Search for a system card, model card, or AI service card document",
+        "Look for documentation of intended use cases and explicitly out-of-scope uses",
+        "Check if failure modes and limitations are documented for users",
+        "Search for user guidance on adjusting AI system behavior"
+      ],
+      "compliant_if": "System card exists with intended use, limitations, failure modes, AND user guidance on behavior adjustment",
+      "partial_if": "Some documentation exists but system card is incomplete or missing user guidance",
+      "non_compliant_if": "No system card or equivalent documentation found",
+      "unknown_if": null,
+      "remediation": "Create system card documenting intended use, limitations, failure modes, and user guidance",
+      "priority": "medium",
+      "suggested_keywords": [
+        "system card",
+        "model card",
+        "service card",
+        "intended use",
+        "limitations",
+        "failure modes",
+        "user guidance"
+      ]
+    },
+    "evidence_source": "documentation"
+  }
+}

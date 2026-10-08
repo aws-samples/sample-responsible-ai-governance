@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<!--
+  Responsible AI Audit Report — Website-style layout
+
+  This is a SINGLE-FILE, self-contained HTML report.
+  - No external libraries, no fonts, no images, no internet required.
+  - All data is embedded in the <script type="application/json"> block at the bottom.
+  - All styling is inline in <style>.
+  - All interactivity is in vanilla JS at the bottom.
+
+  How the skill uses this template:
+    1. Copy this file to <project>/rai-governance/reports/rai-audit-report-<agent>.html
+    2. Replace the single placeholder {{AUDIT_DATA_JSON}} with the actual data blob.
+    3. Done. The user double-clicks the file to open it.
+
+  The data blob must match the shape used by the JS at the bottom (see render() functions).
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Responsible AI Audit Report — {{CODEBASE_NAME}}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #0f172a;
+    background: #f1f5f9;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: #2563eb; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ── App layout: sidebar + main ────────────────────────────────────────── */
+  .app { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 280px; flex-shrink: 0; background: linear-gradient(180deg, #0a1628 0%, #1e3a8a 100%);
+    color: #e2e8f0; display: flex; flex-direction: column;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .brand {
+    padding: 1.5rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .brand-title { font-size: 0.95rem; font-weight: 700; color: white; letter-spacing: -0.01em; }
+  .brand-sub { font-size: 0.72rem; color: rgba(255,255,255,0.55); margin-top: 0.2rem;
+               text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
+  .nav a {
+    display: flex; align-items: center; gap: 0.65rem;
+    padding: 0.6rem 0.85rem; margin: 0.1rem 0; border-radius: 8px;
+    color: rgba(255,255,255,0.78); font-size: 0.88rem; font-weight: 500;
+    cursor: pointer; transition: all 0.12s; text-decoration: none;
+  }
+  .nav a:hover { background: rgba(255,255,255,0.06); color: white; }
+  .nav a.active { background: rgba(37,99,235,0.25); color: white; }
+  .nav a .ic { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.85; }
+
+  .sidebar-footer {
+    padding: 1rem 1.25rem; border-top: 1px solid rgba(255,255,255,0.08);
+    font-size: 0.72rem; color: rgba(255,255,255,0.55); line-height: 1.5;
+  }
+  .sidebar-footer .label { color: rgba(255,255,255,0.4);
+                           text-transform: uppercase; letter-spacing: 0.07em; font-size: 0.62rem; }
+  .sidebar-footer .value { color: #e2e8f0; font-weight: 500; word-break: break-word; }
+  .sidebar-footer p { margin: 0 0 0.5rem; }
+
+  .main { flex: 1; min-width: 0; padding: 2rem 2.5rem; max-width: 1180px; }
+
+  /* ── Page sections (tabs) ──────────────────────────────────────────────── */
+  .page { display: none; animation: fadeIn 0.18s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .page-title { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em;
+                margin-bottom: 0.25rem; color: #0f172a; }
+  .page-subtitle { color: #64748b; font-size: 0.95rem; margin-bottom: 1.75rem; max-width: 75ch; }
+
+  /* ── Cards & generic blocks ────────────────────────────────────────────── */
+  .card {
+    background: white; border-radius: 14px; padding: 1.5rem 1.75rem;
+    box-shadow: 0 2px 8px rgba(15,23,42,0.05);
+    border: 1px solid rgba(15,23,42,0.04);
+    margin-bottom: 1.25rem;
+  }
+  .card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; color: #0f172a; }
+  .card p { color: #334155; }
+  .card .small { font-size: 0.85rem; color: #64748b; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  @media (max-width: 900px) {
+    .grid-2, .grid-4 { grid-template-columns: 1fr; }
+    .sidebar { width: 220px; }
+    .main { padding: 1.5rem 1.25rem; }
+  }
+
+  /* ── Home page styles ──────────────────────────────────────────────────── */
+  .pillar-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1rem; }
+  .pillar-card { background: linear-gradient(135deg, #f8fafc, white);
+                 border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; }
+  .pillar-card h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.35rem; color: #1e293b; }
+  .pillar-card .code { font-size: 0.72rem; font-weight: 700; color: #2563eb;
+                       letter-spacing: 0.06em; margin-bottom: 0.4rem; display: block; }
+  .pillar-card p { font-size: 0.85rem; color: #475569; line-height: 1.55; }
+
+  /* ── Score / maturity card ─────────────────────────────────────────────── */
+  .score-hero { display: grid; grid-template-columns: minmax(180px, auto) 1fr;
+                gap: 2rem; align-items: center; }
+  .score-big { font-size: 4rem; font-weight: 900; line-height: 1; letter-spacing: -0.04em;
+               color: var(--maturity-color, #2563eb); }
+  .score-label { font-size: 0.72rem; font-weight: 700; color: #64748b;
+                 text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.5rem; }
+  .maturity-badge { display: inline-block; padding: 0.35rem 0.95rem;
+                    border-radius: 999px; font-size: 0.78rem; font-weight: 700;
+                    text-transform: uppercase; letter-spacing: 0.08em;
+                    background: var(--maturity-bg); color: var(--maturity-color);
+                    border: 1.5px solid var(--maturity-border); margin-top: 0.6rem; }
+  .pillar-scores { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.85rem; }
+  .pillar-row { display: flex; align-items: center; gap: 0.75rem; }
+  .pillar-row .name { font-size: 0.82rem; font-weight: 600; color: #1e293b;
+                      width: 180px; flex-shrink: 0; line-height: 1.2; }
+  .pillar-row .name .code { font-size: 0.65rem; font-weight: 700; color: #94a3b8;
+                            letter-spacing: 0.06em; margin-left: 0.3rem; }
+  .pillar-row .bar-track { flex: 1; height: 8px; background: #f1f5f9; border-radius: 4px;
+                           overflow: hidden; }
+  .pillar-row .bar-fill { display: block; height: 100%; border-radius: 4px;
+                          transition: width 0.4s, background 0.4s; }
+  .pillar-row .bar-fill.advanced    { background: linear-gradient(90deg, #16a34a, #22c55e); }
+  .pillar-row .bar-fill.established { background: linear-gradient(90deg, #2563eb, #3b82f6); }
+  .pillar-row .bar-fill.developing  { background: linear-gradient(90deg, #d97706, #f59e0b); }
+  .pillar-row .bar-fill.low         { background: linear-gradient(90deg, #dc2626, #ef4444); }
+  .pillar-row .bar-fill.unscored    { background: #cbd5e1; }
+  .pillar-row .pct { font-size: 0.85rem; font-weight: 700; color: #0f172a;
+                     width: 50px; text-align: right; font-variant-numeric: tabular-nums; }
+  .pillar-row .grade { font-size: 0.66rem; font-weight: 700;
+                       text-transform: uppercase; letter-spacing: 0.06em;
+                       padding: 0.15rem 0.5rem; border-radius: 999px;
+                       width: 95px; text-align: center; flex-shrink: 0; }
+  .pillar-row .grade.advanced    { background: #dcfce7; color: #166534; }
+  .pillar-row .grade.established { background: #dbeafe; color: #1e40af; }
+  .pillar-row .grade.developing  { background: #fef3c7; color: #92400e; }
+  .pillar-row .grade.low         { background: #fee2e2; color: #991b1b; }
+  .pillar-row .grade.unscored    { background: #f1f5f9; color: #64748b; }
+
+  /* ── Counts strip ──────────────────────────────────────────────────────── */
+  .counts-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.5rem;
+                  background: white; padding: 1rem; border-radius: 12px;
+                  margin-bottom: 1.25rem; border: 1px solid rgba(15,23,42,0.04); }
+  .count-cell { text-align: center; padding: 0.5rem; border-right: 1px solid #f1f5f9; }
+  .count-cell:last-child { border-right: none; }
+  .count-cell .n { font-size: 1.6rem; font-weight: 800; line-height: 1;
+                   font-variant-numeric: tabular-nums; }
+  .count-cell .lbl { font-size: 0.7rem; color: #64748b; font-weight: 600;
+                     text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.3rem; }
+  .count-cell.compliant .n { color: #16a34a; }
+  .count-cell.partial .n { color: #d97706; }
+  .count-cell.non_compliant .n, .count-cell.non-compliant .n { color: #dc2626; }
+  .count-cell.unknown .n { color: #64748b; }
+  .count-cell.needs_input .n { color: #6366f1; }
+  .count-cell.disabled .n { color: #9ca3af; }
+
+  /* ── Filter bar ─────────────────────────────────────────────────────────── */
+  .filter-bar { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;
+                margin-bottom: 1rem; padding: 0.85rem; background: white;
+                border-radius: 10px; border: 1px solid rgba(15,23,42,0.04); }
+  .filter-bar input[type=search] {
+    flex: 1; min-width: 180px; padding: 0.5rem 0.75rem; border: 1px solid #e2e8f0;
+    border-radius: 8px; font-size: 0.85rem; outline: none;
+    font-family: inherit;
+  }
+  .filter-bar input[type=search]:focus { border-color: #2563eb; }
+  .chip { padding: 0.35rem 0.85rem; border-radius: 999px; font-size: 0.78rem;
+          font-weight: 600; cursor: pointer; transition: all 0.12s;
+          border: 1.5px solid transparent; background: #f1f5f9; color: #475569; }
+  .chip:hover { background: #e2e8f0; }
+  .chip.active { background: #1e3a8a; color: white; border-color: #1e3a8a; }
+  .chip .ct { background: rgba(255,255,255,0.18); border-radius: 999px;
+              padding: 0.05rem 0.45rem; margin-left: 0.4rem; font-size: 0.72rem; }
+  .chip:not(.active) .ct { background: rgba(15,23,42,0.06); color: #475569; }
+  .filter-bar select { padding: 0.5rem 0.75rem; border: 1px solid #e2e8f0;
+                       border-radius: 8px; font-size: 0.85rem; background: white;
+                       font-family: inherit; cursor: pointer; }
+
+  /* ── Findings & questionnaire items ────────────────────────────────────── */
+  .item { background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+          padding: 1.1rem 1.25rem; margin-bottom: 0.75rem; transition: box-shadow 0.12s; }
+  .item:hover { box-shadow: 0 4px 12px rgba(15,23,42,0.08); }
+  .item-head { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+  .item-head .id { font-size: 0.72rem; font-weight: 800; color: #2563eb;
+                   letter-spacing: 0.05em; padding: 0.15rem 0.5rem;
+                   background: #dbeafe; border-radius: 4px; }
+  .item-head .name { font-size: 0.95rem; font-weight: 600; color: #0f172a; flex: 1; min-width: 0; }
+  .pill { padding: 0.18rem 0.6rem; border-radius: 999px; font-size: 0.7rem;
+          font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+  .pill.compliant     { background: #dcfce7; color: #166534; }
+  .pill.partial       { background: #fef3c7; color: #92400e; }
+  .pill.non_compliant { background: #fee2e2; color: #991b1b; }
+  .pill.unknown       { background: #f1f5f9; color: #475569; }
+  .pill.needs_input   { background: #ede9fe; color: #5b21b6; }
+  .pill.disabled      { background: #e5e7eb; color: #6b7280; }
+  .pill.auto_resolved { background: #dbeafe; color: #1e40af; }
+  .pill.deferred      { background: #fef9c3; color: #854d0e; }
+  .pill.high          { background: #fecaca; color: #991b1b; }
+  .pill.medium        { background: #fde68a; color: #92400e; }
+  .pill.low           { background: #d1fae5; color: #065f46; }
+  .item-body { margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px solid #f1f5f9;
+               display: grid; gap: 0.65rem; }
+  .item-body .row { display: grid; grid-template-columns: 130px 1fr; gap: 0.85rem;
+                    font-size: 0.85rem; }
+  .item-body .label { font-size: 0.72rem; font-weight: 700; color: #64748b;
+                      text-transform: uppercase; letter-spacing: 0.06em;
+                      padding-top: 0.1rem; }
+  .item-body .value { color: #1e293b; line-height: 1.55; word-break: break-word; }
+  .item-body .value code { font-family: "SF Mono","Fira Code",monospace; font-size: 0.82rem;
+                            background: #f1f5f9; padding: 0.05rem 0.35rem; border-radius: 3px; }
+  details.expandable { cursor: pointer; }
+  details.expandable summary { list-style: none; cursor: pointer; }
+  details.expandable summary::-webkit-details-marker { display: none; }
+  details.expandable summary::after { content: '▾'; margin-left: auto;
+                                       color: #94a3b8; font-size: 0.85rem;
+                                       transition: transform 0.15s; }
+  details.expandable[open] summary::after { transform: rotate(180deg); }
+
+  /* ── Questionnaire blocks ──────────────────────────────────────────────── */
+  .block { margin-bottom: 1.75rem; }
+  .block-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.85rem;
+                  padding-bottom: 0.5rem; border-bottom: 2px solid #e2e8f0; }
+  .block-header .num { background: #1e3a8a; color: white;
+                       width: 28px; height: 28px; border-radius: 6px;
+                       display: flex; align-items: center; justify-content: center;
+                       font-weight: 800; font-size: 0.85rem; flex-shrink: 0; }
+  .block-header h3 { font-size: 1.05rem; font-weight: 700; color: #0f172a; flex: 1; }
+  .block-header .meta { font-size: 0.78rem; color: #64748b; }
+
+  /* ── SVG trend chart ───────────────────────────────────────────────────── */
+  .chart-wrap { background: white; border-radius: 12px; padding: 1.25rem;
+                border: 1px solid rgba(15,23,42,0.04); }
+  .chart { width: 100%; height: 280px; }
+  .chart .axis { stroke: #e2e8f0; stroke-width: 1; }
+  .chart .grid { stroke: #f1f5f9; stroke-width: 1; stroke-dasharray: 3 3; }
+  .chart .line { fill: none; stroke: #2563eb; stroke-width: 2.5;
+                 stroke-linecap: round; stroke-linejoin: round; }
+  .chart .area { fill: rgba(37,99,235,0.08); }
+  .chart .dot { fill: white; stroke: #2563eb; stroke-width: 2.5; }
+  .chart .dot:hover { fill: #2563eb; }
+  .chart text { font-family: inherit; fill: #64748b; font-size: 11px; }
+  .trend-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.85rem; }
+  .trend-table th, .trend-table td { padding: 0.55rem 0.65rem; text-align: left;
+                                       border-bottom: 1px solid #f1f5f9; }
+  .trend-table th { font-size: 0.7rem; font-weight: 700; color: #64748b;
+                    text-transform: uppercase; letter-spacing: 0.06em; }
+  .trend-table td { color: #1e293b; }
+  .trend-table .delta-up   { color: #16a34a; font-weight: 700; }
+  .trend-table .delta-down { color: #dc2626; font-weight: 700; }
+  .trend-table .delta-zero { color: #94a3b8; }
+
+  /* ── Pre-screen / config table ─────────────────────────────────────────── */
+  .kv-table { width: 100%; border-collapse: collapse; }
+  .kv-table th, .kv-table td { padding: 0.7rem 0.85rem; text-align: left;
+                                border-bottom: 1px solid #f1f5f9; font-size: 0.88rem; }
+  .kv-table th { font-size: 0.72rem; font-weight: 700; color: #64748b;
+                 text-transform: uppercase; letter-spacing: 0.06em;
+                 background: #f8fafc; }
+  .kv-table .yes { color: #16a34a; font-weight: 700; }
+  .kv-table .no  { color: #94a3b8; }
+
+  /* ── Customize page ───────────────────────────────────────────────────── */
+  .next-step-card {
+    background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+    border: 1px solid #fbbf24; border-radius: 12px; padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .next-step-card h4 { color: #78350f; font-weight: 700; margin-bottom: 0.5rem; }
+  .next-step-card p { color: #78350f; font-size: 0.9rem; }
+  .next-step-card .quote { display: block; margin-top: 0.6rem; padding: 0.6rem 0.85rem;
+                            background: rgba(255,255,255,0.6); border-radius: 6px;
+                            font-style: italic; color: #5b2604;
+                            border-left: 3px solid #d97706; }
+  .next-step-card code { font-family: "SF Mono","Fira Code",monospace; font-size: 0.85rem;
+                          background: rgba(120,53,15,0.1); padding: 0.05rem 0.35rem;
+                          border-radius: 3px; color: #5b2604; font-style: normal; }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 3rem 1.5rem; color: #94a3b8; }
+  .empty .icon { font-size: 2.5rem; margin-bottom: 0.5rem; opacity: 0.5; }
+  .empty h4 { color: #475569; margin-bottom: 0.35rem; }
+
+  .pre-screen-context { font-size: 0.82rem; color: #475569; line-height: 1.6;
+                         padding: 0.85rem 1rem; background: #f8fafc;
+                         border-left: 3px solid #2563eb; border-radius: 4px;
+                         margin-top: 0.6rem; }
+  .pre-screen-context strong { color: #1e293b; }
+
+  ul.bullets { padding-left: 1.25rem; color: #334155; }
+  ul.bullets li { margin-bottom: 0.35rem; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- ── SIDEBAR NAV ─────────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-title">Responsible AI Audit Report</div>
+      <div class="brand-sub">Well-Architected Responsible AI Lens</div>
+    </div>
+    <nav class="nav" id="nav">
+      <a data-target="home" class="active">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 12 3l9 9"/><path d="M5 10v10h14V10"/></svg>
+        Home
+      </a>
+      <a data-target="config">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Configuration
+      </a>
+      <a data-target="results">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+        Overall Results
+      </a>
+      <a data-target="rules">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+        Rules Evaluation
+      </a>
+      <a data-target="beyond">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Beyond Code Evidence
+      </a>
+      <a data-target="trend">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        Score Trend
+      </a>
+      <a data-target="customize">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        Customize &amp; Rerun
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <p><span class="label">Codebase</span><br><span class="value" id="footer-codebase">—</span></p>
+      <p><span class="label">Audit Mode</span><br><span class="value" id="footer-agent">—</span></p>
+      <p><span class="label">Generated</span><br><span class="value" id="footer-time">—</span></p>
+    </div>
+  </aside>
+
+  <!-- ── MAIN CONTENT ────────────────────────────────────────────────────── -->
+  <main class="main">
+
+    <!-- HOME ────────────────────────────────────────────────────────────── -->
+    <section class="page active" id="page-home">
+      <h1 class="page-title">Responsible AI Audit Report</h1>
+      <p class="page-subtitle" id="home-sub">A structured assessment against the AWS Well-Architected Responsible AI Lens.</p>
+
+      <div class="card">
+        <h3>What is the AWS Well-Architected Responsible AI Lens?</h3>
+        <p>The AWS Well-Architected Responsible AI Lens defines 99 best practices across the AI/ML lifecycle — covering use case definition, design, evaluation, and operations. It exists to help teams build AI systems that are <strong>fair, safe, transparent, and under appropriate human control</strong> by design rather than as an afterthought.</p>
+        <p style="margin-top: 0.6rem;">This audit consolidates those 99 best practices into 24 actionable rules, assesses your codebase against them using LLM-driven evidence analysis, and surfaces gaps with priority and remediation guidance. <a href="https://docs.aws.amazon.com/wellarchitected/latest/responsible-ai-lens/responsible-ai-lens.html" target="_blank" rel="noopener">Read the official Lens documentation →</a></p>
+      </div>
+
+      <div class="card">
+        <h3>The Four Responsible AI Pillars</h3>
+        <div class="pillar-grid">
+          <div class="pillar-card">
+            <span class="code">RAIUC</span>
+            <h4>Use Case Definition</h4>
+            <p>Verify AI is necessary, identify all stakeholders including affected groups, and obtain proper organizational approval before any AI feature is built.</p>
+          </div>
+          <div class="pillar-card">
+            <span class="code">RAIDD</span>
+            <h4>Design &amp; Development</h4>
+            <p>Embed fairness, explainability, privacy, safety, controllability, and data governance into the design — not as afterthoughts.</p>
+          </div>
+          <div class="pillar-card">
+            <span class="code">RAIER</span>
+            <h4>Evaluation &amp; Release</h4>
+            <p>Plan structured pre-release reviews against the 8 official Responsible AI dimensions: fairness, explainability, privacy and security, safety, controllability, veracity and robustness, governance, and transparency. Make a documented go/no-go decision.</p>
+          </div>
+          <div class="pillar-card">
+            <span class="code">RAIOP</span>
+            <h4>Operations</h4>
+            <p>Monitor performance and fairness drift. Plan for AI incidents. Set governance review cadence. Provide user feedback mechanisms and transparency.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>What this report contains</h3>
+        <ul class="bullets">
+          <li><strong>Configuration</strong> — the project profile, pre-screen answers, and assumptions that shaped this audit</li>
+          <li><strong>Overall Results</strong> — weighted maturity score, pillar breakdown, and finding distribution</li>
+          <li><strong>Rules Evaluation</strong> — code-evidence findings for all 24 rules with status, priority, and reasoning</li>
+          <li><strong>Beyond Code Evidence</strong> — questionnaire responses for governance decisions that can't be verified from code alone</li>
+          <li><strong>Score Trend</strong> — how the audit score has changed across runs as code, decisions, and policy evolved</li>
+          <li><strong>Customize &amp; Rerun</strong> — how to adjust rule policy or re-run the audit</li>
+        </ul>
+      </div>
+
+      <div class="card" style="background: #fef3c7; border-color: #fbbf24;">
+        <h3 style="color: #78350f;">Human-in-the-loop</h3>
+        <p style="color: #78350f;">Verdicts in this report are produced by an LLM analyzing the evidence the AI coding assistant gathered. They're a starting point for human review — not a substitute for it. Treat any finding marked <code>partial</code>, <code>non_compliant</code>, or <code>unknown</code> as a question to investigate, not a final answer. The questionnaire section captures decisions that require human judgment by design.</p>
+      </div>
+    </section>
+
+    <!-- CONFIGURATION ───────────────────────────────────────────────────── -->
+    <section class="page" id="page-config">
+      <h1 class="page-title">Configuration &amp; Assumptions</h1>
+      <p class="page-subtitle">The project profile, pre-screen answers, and scope assumptions that shaped this audit. These directly affect which rules are enforced and which questionnaire items are auto-resolved.</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Project Profile</h3>
+          <table class="kv-table" id="profile-table">
+            <tbody><!-- populated by JS --></tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h3>Pre-screen Answers</h3>
+          <table class="kv-table" id="prescreen-table">
+            <tbody><!-- populated by JS --></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" id="prescreen-context-card">
+        <h3>How pre-screen answers shaped this audit</h3>
+        <div id="prescreen-context-list"><!-- populated by JS --></div>
+      </div>
+
+      <div class="card">
+        <h3>Scope Assumptions</h3>
+        <ul class="bullets" id="scope-assumptions">
+          <li>This audit reviewed evidence gathered by the AI coding assistant from the codebase and supplied documentation paths.</li>
+          <li>Files inside <code>rai-governance/</code> are excluded from evidence (they are this audit's own output).</li>
+          <li>Verdicts represent LLM assessment of available evidence — they are not a legal compliance certification.</li>
+          <li>Rules marked as <strong>disabled</strong> were excluded by policy — reasons are recorded in <code>policy-change-log.json</code>.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- OVERALL RESULTS ─────────────────────────────────────────────────── -->
+    <section class="page" id="page-results">
+      <h1 class="page-title">Overall Results</h1>
+      <p class="page-subtitle">Weighted maturity score combining code-evidence findings and questionnaire responses, with per-pillar breakdown.</p>
+
+      <div class="card score-hero">
+        <div>
+          <div class="score-big" id="score-overall">—</div>
+          <div class="score-label">Weighted Score</div>
+          <div class="maturity-badge" id="maturity-badge">—</div>
+        </div>
+        <div>
+          <h3 style="margin-bottom: 0.85rem;">Pillar Breakdown</h3>
+          <div class="pillar-scores" id="pillar-scores"><!-- populated by JS --></div>
+        </div>
+      </div>
+
+      <div class="counts-strip" id="counts-strip"><!-- populated by JS --></div>
+
+      <div class="card">
+        <h3>What the score means</h3>
+        <ul class="bullets">
+          <li><strong>90 +</strong> — Advanced. Responsible AI practices are systematically embedded.</li>
+          <li><strong>70–89</strong> — Established. Most practices in place; targeted gaps to close.</li>
+          <li><strong>40–69</strong> — Developing. Significant gaps; prioritize before release.</li>
+          <li><strong>&lt; 40</strong> — Low. Foundational work needed before deploying AI features.</li>
+        </ul>
+        <p class="small" style="margin-top: 0.6rem;">The score is weighted by rule priority and pillar weight. Disabled rules and rules with insufficient evidence (<code>needs_input</code>) are excluded.</p>
+      </div>
+    </section>
+
+    <!-- RULES EVALUATION ────────────────────────────────────────────────── -->
+    <section class="page" id="page-rules">
+      <h1 class="page-title">Rules Evaluation</h1>
+      <p class="page-subtitle">Per-rule findings from code-evidence analysis. Each rule was assessed against evidence the AI coding assistant gathered from the codebase and documentation paths.</p>
+
+      <div class="filter-bar">
+        <input type="search" id="rule-search" placeholder="Search rule ID, name, or reasoning…">
+        <select id="rule-pillar">
+          <option value="">All pillars</option>
+          <option value="RAIUC">RAIUC — Use Case</option>
+          <option value="RAIDD">RAIDD — Design &amp; Dev</option>
+          <option value="RAIER">RAIER — Evaluation</option>
+          <option value="RAIOP">RAIOP — Operations</option>
+        </select>
+        <span id="rule-chips" style="display: inline-flex; gap: 0.4rem; flex-wrap: wrap;"><!-- chips populated by JS --></span>
+      </div>
+
+      <div id="rules-list"><!-- populated by JS --></div>
+    </section>
+
+    <!-- BEYOND CODE EVIDENCE ────────────────────────────────────────────── -->
+    <section class="page" id="page-beyond">
+      <h1 class="page-title">Beyond Code Evidence</h1>
+      <p class="page-subtitle">Questionnaire responses covering governance decisions, organizational approval, risk assessment, and other practices that cannot be verified by reading code alone.</p>
+
+      <div class="filter-bar">
+        <input type="search" id="q-search" placeholder="Search question text or response…">
+        <span id="q-chips" style="display: inline-flex; gap: 0.4rem; flex-wrap: wrap;"><!-- chips populated by JS --></span>
+      </div>
+
+      <div id="q-list"><!-- populated by JS --></div>
+    </section>
+
+    <!-- SCORE TREND ─────────────────────────────────────────────────────── -->
+    <section class="page" id="page-trend">
+      <h1 class="page-title">Score Trend</h1>
+      <p class="page-subtitle">How the audit score has evolved across runs. Snapshots are taken after each audit, questionnaire completion, policy change, or report generation.</p>
+
+      <div class="chart-wrap">
+        <svg class="chart" id="trend-chart"></svg>
+        <table class="trend-table" id="trend-table">
+          <thead><tr><th>Snapshot</th><th>When</th><th>Trigger</th><th>Score</th><th>Δ</th><th>Label</th></tr></thead>
+          <tbody><!-- populated by JS --></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CUSTOMIZE & RERUN ──────────────────────────────────────────────── -->
+    <section class="page" id="page-customize">
+      <h1 class="page-title">Customize Rules &amp; Rerun</h1>
+      <p class="page-subtitle">This view will let you adjust rule policy and trigger reruns directly from this report. For now, here's how to do it through your AI coding assistant.</p>
+
+      <div class="next-step-card">
+        <h4>Disable a rule (advisory or excluded from scoring)</h4>
+        <p>Some rules don't apply to your project — for example, RAIOP-06 (system card) might be deferred for a demo app. Tell the agent:</p>
+        <span class="quote">"Disable <code>RAIOP-06</code>, reason: demo app — system card deferred to v2."</span>
+      </div>
+
+      <div class="next-step-card">
+        <h4>Downgrade a rule (findings become advisory, not blocking)</h4>
+        <span class="quote">"Downgrade <code>RAIDD-06</code> to advisory, reason: hosted model — provider owns training pipeline."</span>
+      </div>
+
+      <div class="next-step-card">
+        <h4>Re-run the report after policy changes</h4>
+        <span class="quote">"Re-generate the report" — no need to re-run the full audit unless code or evidence changed.</span>
+      </div>
+
+      <div class="next-step-card">
+        <h4>Re-run the full audit (after code changes)</h4>
+        <span class="quote">"Re-run the RAI audit" — the agent will gather fresh evidence and re-assess all rules.</span>
+      </div>
+
+      <div class="card">
+        <h3>What's next for this view</h3>
+        <ul class="bullets">
+          <li>Inline policy editing — toggle a rule's status from this page</li>
+          <li>Per-rule remediation tracker</li>
+          <li>Compare two audit runs side-by-side</li>
+          <li>Export a PDF version of the report</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ── DATA BLOB ────────────────────────────────────────────────────────── -->
+<!-- The skill replaces the {{AUDIT_DATA_JSON}} placeholder with the actual data
+     when generating a report. The JS below reads this and renders all sections. -->
+<script type="application/json" id="audit-data">
+{{AUDIT_DATA_JSON}}
+</script>
+
+<!-- ── INTERACTIVITY ────────────────────────────────────────────────────── -->
+<script>
+(function() {
+  // Read data blob from the embedded JSON block at the bottom of the page.
+  const DATA = JSON.parse(document.getElementById('audit-data').textContent);
+
+  // ── Module-level filter state (declared at top — `let` is in TDZ until here,
+  //    and the renderXChips() helpers below reference these names) ──
+  let rulesActiveStatus = 'all';
+  let qActiveVerdict = 'all';
+
+  // ── Tab navigation ──
+  const navLinks = document.querySelectorAll('#nav a');
+  const pages = document.querySelectorAll('.page');
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = link.dataset.target;
+      navLinks.forEach(n => n.classList.toggle('active', n === link));
+      pages.forEach(p => p.classList.toggle('active', p.id === 'page-' + target));
+      window.scrollTo(0, 0);
+    });
+  });
+
+  // ── Footer / header meta ──
+  document.getElementById('footer-codebase').textContent = DATA.meta.codebase_name || '—';
+  document.getElementById('footer-agent').textContent = (DATA.meta.audit_mode || '—') + (DATA.meta.agent_label ? ' (' + DATA.meta.agent_label + ')' : '');
+  document.getElementById('footer-time').textContent = formatDate(DATA.meta.generated_at);
+  document.getElementById('home-sub').textContent =
+    `Audit of "${DATA.meta.codebase_name || 'this project'}" against the AWS Well-Architected Responsible AI Lens.`;
+
+  // ── Configuration page ──
+  renderProfile();
+  renderPreScreen();
+  renderPreScreenContext();
+
+  // ── Overall Results ──
+  renderScore();
+  renderPillars();
+  renderCounts();
+
+  // ── Rules ──
+  renderRulesChips();
+  renderRules();
+  document.getElementById('rule-search').addEventListener('input', renderRules);
+  document.getElementById('rule-pillar').addEventListener('change', renderRules);
+
+  // ── Questionnaire ──
+  renderQChips();
+  renderQuestionnaire();
+  document.getElementById('q-search').addEventListener('input', renderQuestionnaire);
+
+  // ── Trend ──
+  renderTrend();
+
+  // ─────────────────────────────────────────────────────────────────────────
+
+  function renderProfile() {
+    const tbody = document.querySelector('#profile-table tbody');
+    const p = DATA.profile || {};
+    const rows = [
+      ['Project ID', p.project_id || '—'],
+      ['Tier', p.tier ? `Tier ${p.tier} — ${p.tier_name || ''}` : '—'],
+      ['Codebase Path', p.project_path || '—'],
+      ['Documentation Paths', (p.docs_paths || []).join(', ') || '—'],
+      ['Activated', formatDate(p.created_at)],
+      ['Last Updated', formatDate(p.updated_at)],
+    ];
+    tbody.innerHTML = rows.map(r => `<tr><th>${r[0]}</th><td>${escapeHtml(r[1])}</td></tr>`).join('');
+  }
+
+  function renderPreScreen() {
+    const tbody = document.querySelector('#prescreen-table tbody');
+    const ps = (DATA.profile && DATA.profile.pre_screen) || {};
+    const rows = [
+      ['Hosted model (no fine-tuning)', !!ps.hosted_model],
+      ['Regulated data (HIPAA / GDPR / financial)', !!ps.regulated_data],
+      ['Has formal AI governance process', !!ps.has_governance],
+    ];
+    tbody.innerHTML = rows.map(r => {
+      const cls = r[1] ? 'yes' : 'no';
+      const label = r[1] ? 'Yes' : 'No';
+      return `<tr><th>${r[0]}</th><td class="${cls}">${label}</td></tr>`;
+    }).join('');
+  }
+
+  function renderPreScreenContext() {
+    const list = document.getElementById('prescreen-context-list');
+    const adjustments = (DATA.profile && DATA.profile.applied_adjustments) || [];
+    if (adjustments.length === 0) {
+      list.innerHTML = `<p class="small">No pre-screen adjustments applied — rules were assessed using their default criteria.</p>`;
+      return;
+    }
+    list.innerHTML = adjustments.map(a =>
+      `<div class="pre-screen-context"><strong>${escapeHtml(a.rule_id)}:</strong> ${escapeHtml(a.note)}</div>`
+    ).join('');
+  }
+
+  function renderScore() {
+    const score = (DATA.score && DATA.score.overall_score) || 0;
+    const maturity = (DATA.score && DATA.score.maturity_label) || 'Low';
+    document.getElementById('score-overall').textContent = score + '%';
+    const badge = document.getElementById('maturity-badge');
+    badge.textContent = maturity;
+
+    const colors = {
+      'Advanced':    { fg: '#16a34a', bg: '#dcfce7', border: '#86efac' },
+      'Established': { fg: '#2563eb', bg: '#dbeafe', border: '#93c5fd' },
+      'Developing':  { fg: '#d97706', bg: '#fef3c7', border: '#fde68a' },
+      'Low':         { fg: '#dc2626', bg: '#fee2e2', border: '#fca5a5' },
+    };
+    const c = colors[maturity] || colors['Low'];
+    document.documentElement.style.setProperty('--maturity-color', c.fg);
+    document.documentElement.style.setProperty('--maturity-bg', c.bg);
+    document.documentElement.style.setProperty('--maturity-border', c.border);
+  }
+
+  function renderPillars() {
+    const pillars = (DATA.score && DATA.score.pillar_scores) || {};
+    const names = {
+      RAIUC: 'Use Case Definition',
+      RAIDD: 'Design & Development',
+      RAIER: 'Evaluation & Release',
+      RAIOP: 'Operations',
+    };
+    const wrap = document.getElementById('pillar-scores');
+    wrap.innerHTML = Object.keys(names).map(p => {
+      const v = pillars[p];
+      const display = v == null ? '—' : v.toFixed(1) + '%';
+      const w = v == null ? 0 : v;
+      const grade = maturityFor(v);
+      return `<div class="pillar-row">
+        <span class="name">${names[p]} <span class="code">${p}</span></span>
+        <span class="bar-track"><span class="bar-fill ${grade.key}" style="width:${w}%"></span></span>
+        <span class="pct">${display}</span>
+        <span class="grade ${grade.key}">${grade.label}</span>
+      </div>`;
+    }).join('');
+  }
+
+  // Map a numeric score (or null) to a {key, label} grade.
+  // Thresholds match the maturity_thresholds in the scoring policy.
+  function maturityFor(v) {
+    if (v == null) return { key: 'unscored', label: 'No data' };
+    if (v >= 90)   return { key: 'advanced',    label: 'Advanced' };
+    if (v >= 70)   return { key: 'established', label: 'Established' };
+    if (v >= 40)   return { key: 'developing',  label: 'Developing' };
+    return             { key: 'low',         label: 'Low' };
+  }
+
+  function renderCounts() {
+    const c = (DATA.score && DATA.score.counts) || {};
+    const order = [
+      ['compliant',     'Compliant'],
+      ['partial',       'Partial'],
+      ['non_compliant', 'Non-compliant'],
+      ['unknown',       'Unknown'],
+      ['needs_input',   'Needs Input'],
+      ['disabled',      'Disabled'],
+    ];
+    document.getElementById('counts-strip').innerHTML = order.map(([k, lbl]) =>
+      `<div class="count-cell ${k}"><div class="n">${safeCount(c[k])}</div><div class="lbl">${escapeHtml(lbl)}</div></div>`
+    ).join('');
+  }
+
+  // ── Rules table with filter chips ──
+  function renderRulesChips() {
+    const findings = DATA.findings || [];
+    const counts = { all: findings.length };
+    findings.forEach(f => { counts[f.status] = (counts[f.status] || 0) + 1; });
+    const order = ['all', 'compliant', 'partial', 'non_compliant', 'unknown', 'needs_input', 'disabled'];
+    const labels = { all: 'All', compliant: 'Compliant', partial: 'Partial', non_compliant: 'Non-compliant',
+                     unknown: 'Unknown', needs_input: 'Needs Input', disabled: 'Disabled' };
+    document.getElementById('rule-chips').innerHTML = order.map(s => {
+      const ct = counts[s] || 0;
+      const cls = s === rulesActiveStatus ? 'chip active' : 'chip';
+      return `<span class="${cls}" data-status="${s}">${labels[s]}<span class="ct">${ct}</span></span>`;
+    }).join('');
+    document.querySelectorAll('#rule-chips .chip').forEach(c => {
+      c.addEventListener('click', () => { rulesActiveStatus = c.dataset.status; renderRulesChips(); renderRules(); });
+    });
+  }
+  function renderRules() {
+    const findings = DATA.findings || [];
+    const search = document.getElementById('rule-search').value.toLowerCase();
+    const pillarFilter = document.getElementById('rule-pillar').value;
+    const wrap = document.getElementById('rules-list');
+    const filtered = findings.filter(f => {
+      if (rulesActiveStatus !== 'all' && f.status !== rulesActiveStatus) return false;
+      if (pillarFilter && f.pillar !== pillarFilter) return false;
+      if (search) {
+        const blob = (f.rule_id + ' ' + (f.name||'') + ' ' + (f.reasoning||'') + ' ' + (f.evidence||'')).toLowerCase();
+        if (blob.indexOf(search) === -1) return false;
+      }
+      return true;
+    });
+    if (filtered.length === 0) {
+      wrap.innerHTML = `<div class="empty"><div class="icon">🔍</div><h4>No rules match your filters</h4><p>Try clearing the search or status filter.</p></div>`;
+      return;
+    }
+    wrap.innerHTML = filtered.map(f => {
+      const pri = f.priority ? `<span class="pill ${escapeHtml(f.priority)}">${escapeHtml(f.priority)}</span>` : '';
+      return `<details class="item expandable" data-status="${escapeHtml(f.status)}">
+        <summary class="item-head">
+          <span class="id">${escapeHtml(f.rule_id)}</span>
+          <span class="name">${escapeHtml(f.name || '')}</span>
+          <span class="pill ${escapeHtml(f.status)}">${escapeHtml(f.status || 'unknown')}</span>
+          ${pri}
+        </summary>
+        <div class="item-body">
+          ${f.pillar ? row('Pillar', f.pillar) : ''}
+          ${f.evidence ? row('Evidence', f.evidence) : ''}
+          ${f.reasoning ? row('Reasoning', f.reasoning) : ''}
+          ${f.lens_bps && f.lens_bps.length ? rawRow('Lens BPs', f.lens_bps.map(bp => lensLink(bp)).join(', ')) : ''}
+          ${f.remediation ? row('Remediation', f.remediation) : ''}
+        </div>
+      </details>`;
+    }).join('');
+  }
+
+  // ── Questionnaire ──
+  function renderQChips() {
+    const answers = (DATA.questionnaire && DATA.questionnaire.answers) || {};
+    const list = Object.values(answers);
+    const counts = { all: list.length };
+    list.forEach(a => {
+      const k = a.verdict || a.status || 'unknown';
+      counts[k] = (counts[k] || 0) + 1;
+    });
+    const order = ['all', 'compliant', 'partial', 'non_compliant', 'unknown', 'auto_resolved', 'deferred'];
+    const labels = { all: 'All', compliant: 'Compliant', partial: 'Partial', non_compliant: 'Non-compliant',
+                     unknown: 'Unknown', auto_resolved: 'Auto-resolved', deferred: 'Deferred' };
+    document.getElementById('q-chips').innerHTML = order.map(s => {
+      const ct = counts[s] || 0;
+      const cls = s === qActiveVerdict ? 'chip active' : 'chip';
+      return `<span class="${cls}" data-verdict="${s}">${labels[s]}<span class="ct">${ct}</span></span>`;
+    }).join('');
+    document.querySelectorAll('#q-chips .chip').forEach(c => {
+      c.addEventListener('click', () => { qActiveVerdict = c.dataset.verdict; renderQChips(); renderQuestionnaire(); });
+    });
+  }
+  function renderQuestionnaire() {
+    const answers = (DATA.questionnaire && DATA.questionnaire.answers) || {};
+    const lensBps = DATA.lens_bps || {};
+    const search = document.getElementById('q-search').value.toLowerCase();
+    const wrap = document.getElementById('q-list');
+
+    // Group by block.
+    const blocks = {};
+    Object.entries(answers).forEach(([lensCode, ans]) => {
+      const block = ans.block || 'Other';
+      if (!blocks[block]) blocks[block] = [];
+      blocks[block].push({ lensCode, ans, bp: lensBps[lensCode] || {} });
+    });
+
+    if (Object.keys(blocks).length === 0) {
+      wrap.innerHTML = `<div class="empty"><div class="icon">📝</div><h4>No questionnaire responses recorded yet</h4><p>The questionnaire covers governance decisions that aren't visible in code. Ask the agent to walk through the blocks.</p></div>`;
+      return;
+    }
+
+    let html = '';
+    const blockOrder = Object.keys(blocks).sort();
+    blockOrder.forEach((blockName, i) => {
+      const items = blocks[blockName].filter(({ ans }) => {
+        const verdict = ans.verdict || ans.status || 'unknown';
+        if (qActiveVerdict !== 'all' && verdict !== qActiveVerdict) return false;
+        if (search) {
+          const blob = ((ans.question||'') + ' ' + (ans.response||'') + ' ' + (ans.reasoning||'')).toLowerCase();
+          if (blob.indexOf(search) === -1) return false;
+        }
+        return true;
+      });
+      if (items.length === 0) return;
+      html += `<div class="block">
+        <div class="block-header">
+          <span class="num">${blockName.match(/\d+/) ? blockName.match(/\d+/)[0] : (i+1)}</span>
+          <h3>${escapeHtml(blockName)}</h3>
+          <span class="meta">${items.length} item${items.length === 1 ? '' : 's'}</span>
+        </div>`;
+      html += items.map(({ lensCode, ans, bp }) => {
+        const verdict = ans.verdict || ans.status || 'unknown';
+        return `<details class="item expandable" data-status="${escapeHtml(verdict)}">
+          <summary class="item-head">
+            <span class="id">${escapeHtml(lensCode)}</span>
+            <span class="name">${escapeHtml(ans.question || bp.name || lensCode)}</span>
+            <span class="pill ${escapeHtml(verdict)}">${escapeHtml(verdict)}</span>
+          </summary>
+          <div class="item-body">
+            ${bp.focus_area ? row('Focus Area', bp.focus_area) : ''}
+            ${ans.response ? row('Response', ans.response) : ''}
+            ${ans.reasoning ? row('Reasoning', ans.reasoning) : ''}
+            ${ans.file_path ? rawRow('Source File', '<code>' + escapeHtml(ans.file_path) + '</code>') : ''}
+            ${rawRow('Lens BP', lensLink(lensCode))}
+          </div>
+        </details>`;
+      }).join('');
+      html += `</div>`;
+    });
+
+    wrap.innerHTML = html || `<div class="empty"><div class="icon">🔍</div><h4>No questionnaire items match your filters</h4></div>`;
+  }
+
+  // ── Score trend (SVG line chart) ──
+  function renderTrend() {
+    const snaps = (DATA.history && DATA.history.snapshots) || [];
+    const svg = document.getElementById('trend-chart');
+    const tbody = document.querySelector('#trend-table tbody');
+    if (snaps.length === 0) {
+      svg.innerHTML = '';
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:1.5rem;">No snapshots recorded yet.</td></tr>';
+      return;
+    }
+
+    // Compute layout.
+    const W = svg.clientWidth || 800;
+    const H = 280;
+    const pad = { l: 38, r: 20, t: 20, b: 32 };
+    const innerW = W - pad.l - pad.r;
+    const innerH = H - pad.t - pad.b;
+    const xs = snaps.map((_, i) => pad.l + (snaps.length === 1 ? innerW / 2 : (i / (snaps.length - 1)) * innerW));
+    const ys = snaps.map(s => pad.t + innerH - ((s.score?.weighted || 0) / 100) * innerH);
+
+    // Build SVG.
+    let s = '';
+    // Y-axis grid + labels at 0/25/50/75/100.
+    [0, 25, 50, 75, 100].forEach(v => {
+      const y = pad.t + innerH - (v / 100) * innerH;
+      s += `<line class="grid" x1="${pad.l}" x2="${W - pad.r}" y1="${y}" y2="${y}"/>`;
+      s += `<text x="${pad.l - 6}" y="${y + 4}" text-anchor="end">${v}</text>`;
+    });
+    // Area + line.
+    if (snaps.length > 1) {
+      const linePath = xs.map((x, i) => (i ? 'L' : 'M') + x + ' ' + ys[i]).join(' ');
+      const areaPath = linePath + ` L${xs[xs.length-1]} ${pad.t+innerH} L${xs[0]} ${pad.t+innerH} Z`;
+      s += `<path class="area" d="${areaPath}"/>`;
+      s += `<path class="line" d="${linePath}"/>`;
+    }
+    // Dots + x-axis labels.
+    snaps.forEach((snap, i) => {
+      s += `<circle class="dot" cx="${xs[i]}" cy="${ys[i]}" r="4.5"><title>${escapeHtml(snap.label || snap.snapshot_id)}: ${(snap.score?.weighted || 0).toFixed(1)}%</title></circle>`;
+      // Show label every nth snapshot to avoid crowding.
+      const step = Math.max(1, Math.floor(snaps.length / 6));
+      if (i % step === 0 || i === snaps.length - 1) {
+        s += `<text x="${xs[i]}" y="${H - pad.b + 16}" text-anchor="middle">${escapeHtml(snap.snapshot_id || ('#' + (i+1)))}</text>`;
+      }
+    });
+    svg.innerHTML = s;
+
+    // Trend table.
+    tbody.innerHTML = snaps.map(snap => {
+      const score = (snap.score?.weighted || 0).toFixed(1) + '%';
+      const delta = snap.delta;
+      let dCell = '<span class="delta-zero">—</span>';
+      if (delta != null) {
+        if (delta > 0) dCell = `<span class="delta-up">+${delta}</span>`;
+        else if (delta < 0) dCell = `<span class="delta-down">${delta}</span>`;
+        else dCell = `<span class="delta-zero">0</span>`;
+      }
+      return `<tr>
+        <td>${escapeHtml(snap.snapshot_id || '')}</td>
+        <td>${formatDate(snap.timestamp)}</td>
+        <td>${escapeHtml(snap.trigger || '')}</td>
+        <td><strong>${score}</strong></td>
+        <td>${dCell}</td>
+        <td>${escapeHtml(snap.label || '')}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ── Helpers ──
+  // row() escapes its value. Use it for anything that originates outside this
+  // template — Bedrock verdicts, questionnaire answers, Lens reference data.
+  // rawRow() is the explicit opt-out for the few call sites that build their
+  // own trusted markup; every rawRow() caller must escape its own inputs.
+  function row(label, value) {
+    return rawRow(label, escapeHtml(value));
+  }
+  function rawRow(label, html) {
+    return `<div class="row"><span class="label">${escapeHtml(label)}</span><span class="value">${html}</span></div>`;
+  }
+  function lensLink(lensCode) {
+    // Lens BP codes are [A-Z0-9-] by construction. Strip anything else: slug is
+    // a URL path segment, so an allowlist blocks attribute breakout and path
+    // manipulation in one step. The String() guard also stops a non-string
+    // lensCode from throwing on .toLowerCase().
+    const slug = String(lensCode == null ? '' : lensCode).toLowerCase().replace(/[^a-z0-9-]/g, '');
+    return `<a href="https://docs.aws.amazon.com/wellarchitected/latest/responsible-ai-lens/${slug}.html" target="_blank" rel="noopener">${escapeHtml(lensCode)}</a>`;
+  }
+  function formatDate(iso) {
+    if (!iso) return '—';
+    try {
+      const d = new Date(iso);
+      return d.toLocaleString(undefined, { year: 'numeric', month: 'short', day: 'numeric',
+                                             hour: '2-digit', minute: '2-digit' });
+    } catch (e) { return iso; }
+  }
+  function escapeHtml(str) {
+    if (str == null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  // Counts must render as plain digits — never let a non-numeric score.counts
+  // value reach innerHTML. Non-finite or negative values fall back to 0.
+  function safeCount(v) {
+    const n = Number(v);
+    return Number.isFinite(n) && n >= 0 ? Math.trunc(n) : 0;
+  }
+})();
+</script>
+
+</body>
+</html>

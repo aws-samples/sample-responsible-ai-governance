@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.1",
+  "orchestrator_hint": "aidlc",
+  "_comment": "Default gate map for the AIDLC orchestrator. Each gate explicitly lists its rules and questionnaire items - this is the single source of truth for what is assessed at each gate. COVERAGE CONTRACT: every rule in rules.json AND every questionnaire item in questionnaire.json is assigned to exactly one gate; the skill validates this at load time. SCOPE: the gate-map only declares what COULD be assessed - which items actually run for a given project is determined by the policy layer (project-scoring-policy.json + org-scoring-policy.json + pre-screen flags). Items that the policy auto-resolves (e.g. Block 3 dataset items when hosted_model=true) or disables are tracked in policy-change-log.json so the audit trail records what was skipped, why, and by whom.",
+  "gates": [
+    {
+      "name": "requirements_analysis",
+      "policy": "blocking",
+      "pillars_hint": ["RAIUC"],
+      "rules": ["RAIUC-01", "RAIUC-02", "RAIUC-03", "RAIUC-05", "RAIUC-06"],
+      "questionnaire_items": [
+        "RAIUC01-BP01",
+        "RAIUC02-BP02",
+        "RAIUC04-BP03",
+        "RAIUC05-BP01",
+        "RAIBR01-BP01"
+      ]
+    },
+    {
+      "name": "application_design",
+      "policy": "blocking",
+      "pillars_hint": ["RAIUC", "RAIDD"],
+      "rules": ["RAIUC-04", "RAIDD-05"],
+      "questionnaire_items": [
+        "RAIBR02-BP09",
+        "RAIBR03-BP01",
+        "RAIBR03-BP04",
+        "RAIBR04-BP01",
+        "RAIBR04-BP02",
+        "RAIBR04-BP03",
+        "RAISP01-BP02",
+        "RAISP02-BP05",
+        "RAISP04-BP01"
+      ]
+    },
+    {
+      "name": "functional_design",
+      "policy": "advisory",
+      "pillars_hint": ["RAIDD"],
+      "rules": ["RAIDD-01", "RAIDD-02", "RAIDD-03", "RAIDD-04", "RAIDD-07"],
+      "questionnaire_items": []
+    },
+    {
+      "name": "nfr_requirements",
+      "policy": "blocking",
+      "pillars_hint": ["RAIDD"],
+      "rules": ["RAIDD-06"],
+      "questionnaire_items": [
+        "RAIDP01-BP01",
+        "RAIDP01-BP02",
+        "RAIDP01-BP03",
+        "RAIDP01-BP04",
+        "RAIDP02-BP01",
+        "RAIDP02-BP02",
+        "RAIDP02-BP03",
+        "RAIDP02-BP04",
+        "RAIDP03-BP01",
+        "RAIDP03-BP02",
+        "RAIDP03-BP03",
+        "RAIDP03-BP04",
+        "RAIDP03-BP05",
+        "RAIDP04-BP01",
+        "RAIDP04-BP02",
+        "RAIDP04-BP03",
+        "RAIDP04-BP04",
+        "RAIDP04-BP05"
+      ]
+    },
+    {
+      "name": "infrastructure_design",
+      "policy": "advisory",
+      "pillars_hint": ["RAIOP"],
+      "rules": [],
+      "questionnaire_items": []
+    },
+    {
+      "name": "code_generation",
+      "policy": "advisory",
+      "pillars_hint": ["RAIDD", "RAIOP"],
+      "rules": ["RAIER-01", "RAIOP-04", "RAIOP-05"],
+      "questionnaire_items": []
+    },
+    {
+      "name": "build_and_test",
+      "policy": "blocking",
+      "pillars_hint": ["RAIER", "RAIOP"],
+      "rules": [
+        "RAIER-02",
+        "RAIER-03",
+        "RAIER-04",
+        "RAIER-05",
+        "RAIOP-01",
+        "RAIOP-02",
+        "RAIOP-03",
+        "RAIOP-06"
+      ],
+      "questionnaire_items": [
+        "RAIRC02-BP01",
+        "RAIRC04-BP01",
+        "RAIER01-BP02",
+        "RAIER02-BP01",
+        "RAIER03-BP01",
+        "RAIER03-BP02",
+        "RAIGT01-BP02",
+        "RAIMON01-BP01",
+        "RAIMON03-BP01"
+      ]
+    }
+  ]
+}

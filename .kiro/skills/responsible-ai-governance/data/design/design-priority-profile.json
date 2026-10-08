@@ -1,0 +1,43 @@
+{
+  "_comment": "FUTURE CAPABILITY — not yet referenced by SKILL.md, part of the not-yet-active design mode (see SKILL.md 'Roadmap: design mode'). Design-mode rule priorities. Reflects cost-of-failure WHEN A GAP IS DISCOVERED AT DESIGN TIME. Differences from audit profile are deliberate: design-time gaps in fairness/safety/explainability/privacy are critical (cheap to bake in, expensive to retrofit); some test/release rules are downgraded because they cannot be assessed before code exists. See the 'rationale' block below for per-rule reasoning.",
+  "priorities": {
+    "RAIUC-01": "medium",
+    "RAIUC-02": "medium",
+    "RAIUC-03": "medium",
+    "RAIUC-04": "medium",
+    "RAIUC-05": "high",
+    "RAIUC-06": "medium",
+
+    "RAIDD-01": "critical",
+    "RAIDD-02": "critical",
+    "RAIDD-03": "critical",
+    "RAIDD-04": "critical",
+    "RAIDD-05": "critical",
+    "RAIDD-06": "high",
+    "RAIDD-07": "critical",
+
+    "RAIER-01": "medium",
+    "RAIER-02": "low",
+    "RAIER-03": "medium",
+    "RAIER-04": "low",
+    "RAIER-05": "medium",
+
+    "RAIOP-01": "medium",
+    "RAIOP-02": "medium",
+    "RAIOP-03": "low",
+    "RAIOP-04": "medium",
+    "RAIOP-05": "high",
+    "RAIOP-06": "medium"
+  },
+  "rationale": {
+    "RAIDD-01": "Fairness baked at design - expensive to retrofit",
+    "RAIDD-02": "Explainability fields are design-time decisions",
+    "RAIDD-03": "Privacy violations after launch trigger breach notifications",
+    "RAIDD-04": "Pre-LLM safety gate must be designed; bolting on post-hoc rarely works",
+    "RAIDD-05": "Kill-switch + escalation must be designed in",
+    "RAIDD-07": "Threat model is design-time",
+    "RAIER-02": "Cannot go/no-go at design - defer to release",
+    "RAIER-04": "Traceability artifact emerges at build time",
+    "RAIOP-05": "Disclosure copy is design-time; cheap to forget"
+  }
+}
